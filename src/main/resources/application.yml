@@ -1,0 +1,31 @@
+server:
+  port: 8080 #
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # Routes statiques conservées comme fallback
+        - id: ms-banque
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/banques/**
+          filters:
+            - RewritePath=/api/banques/(?<segment>.*), /api/banques/$\{segment}
+
+        - id: ms-compte
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/comptes/**
+          filters:
+            - RewritePath=/api/comptes/(?<segment>.*), /api/comptes/$\{segment}
+
+#  # Configuration Redis pour stocker les routes dynamiques
+#  redis:
+#    host: localhost
+#port: 6379
